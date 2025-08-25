@@ -1,0 +1,53 @@
+FROM ubuntu:latest
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update and install basic tools
+RUN apt update && apt upgrade -y
+RUN echo "resolvconf resolvconf/linkify-resolvconf boolean false" | debconf-set-selections
+RUN apt install curl lsb-release resolvconf dnsutils iproute2 procps --yes
+
+# Install Lokinet using official method
+RUN curl -so /etc/apt/trusted.gpg.d/oxen.gpg https://deb.oxen.io/pub.gpg
+RUN echo "deb https://deb.oxen.io $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/oxen.list
+RUN apt update
+RUN apt install lokinet --yes
+
+# Setup lokinet
+RUN chown _lokinet:_loki /var/lib/lokinet -R
+RUN /usr/bin/lokinet -g
+RUN lokinet-bootstrap
+RUN chown _lokinet:_loki /var/lib/lokinet -R
+
+# Configure DNS resolution for .loki domains
+RUN mkdir -p /etc/resolvconf/resolv.conf.d
+RUN echo "nameserver 127.3.2.1" > /etc/resolvconf/resolv.conf.d/head
+RUN echo "nameserver 8.8.8.8" >> /etc/resolvconf/resolv.conf.d/head
+
+# Create helper scripts
+RUN echo "#!/bin/bash" > /get_loki_address.sh
+RUN echo "host -t cname localhost.loki 127.3.2.1" >> /get_loki_address.sh
+RUN chmod +x /get_loki_address.sh
+
+# Copy configuration
+RUN cp /var/lib/lokinet/lokinet.ini /
+
+# Create startup script
+RUN echo "#!/bin/bash" > /start.sh
+RUN echo "set -e" >> /start.sh
+RUN echo "echo 'Setting up lokinet configuration...'" >> /start.sh
+RUN echo "cp -n /lokinet.ini /var/lib/lokinet/" >> /start.sh
+RUN echo "/usr/bin/lokinet -g" >> /start.sh
+RUN echo "sed -ie 's|#keyfile=|keyfile=/var/lib/lokinet/snappkey.private|g' /var/lib/lokinet/lokinet.ini" >> /start.sh
+RUN echo "rm -rf /var/lib/lokinet/nodedb/" >> /start.sh
+RUN echo "rm -rf /var/lib/lokinet/profiles.dat" >> /start.sh
+RUN echo "echo 'Starting lokinet...'" >> /start.sh
+RUN echo "/usr/bin/lokinet &" >> /start.sh
+RUN echo "echo 'Waiting for lokinet to be ready...'" >> /start.sh
+RUN echo "sleep 15" >> /start.sh
+RUN echo "echo 'Updating DNS configuration...'" >> /start.sh
+RUN echo "resolvconf -u" >> /start.sh
+RUN echo "echo 'DNS configured. Container ready for .loki domain resolution.'" >> /start.sh
+RUN echo "tail -f /dev/null" >> /start.sh
+RUN chmod +x /start.sh
+
+ENTRYPOINT ["/start.sh"]

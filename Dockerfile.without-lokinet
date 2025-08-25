@@ -1,0 +1,25 @@
+FROM ubuntu:latest
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update and install basic tools
+RUN apt update && apt upgrade -y
+RUN apt install curl dnsutils resolvconf --yes
+
+# Configure DNS resolution for .loki domains
+RUN mkdir -p /etc/resolvconf/resolv.conf.d
+RUN echo "nameserver 127.3.2.1" > /etc/resolvconf/resolv.conf.d/head
+RUN echo "nameserver 8.8.8.8" >> /etc/resolvconf/resolv.conf.d/head
+
+# Create startup script
+RUN echo "#!/bin/bash" > /start.sh
+RUN echo "set -e" >> /start.sh
+RUN echo "echo 'Configuring DNS for .loki domains...'" >> /start.sh
+RUN echo "resolvconf -u" >> /start.sh
+RUN echo "echo 'DNS configured. Container ready for .loki domain testing.'" >> /start.sh
+RUN echo "echo 'You can now test DNS resolution with:'" >> /start.sh
+RUN echo "echo '  nslookup yourdomain.loki 127.3.2.1'" >> /start.sh
+RUN echo "echo '  curl http://yourdomain.loki'" >> /start.sh
+RUN echo "tail -f /dev/null" >> /start.sh
+RUN chmod +x /start.sh
+
+ENTRYPOINT ["/start.sh"]

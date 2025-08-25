@@ -1,0 +1,86 @@
+# Docker
+.dockerignore
+docker-compose.override.yml
+docker-compose.*.yml
+!docker-compose.yml
+!docker-compose.test.yml
+
+# Docker build artifacts
+*.tar
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+
+# Docker volumes and data
+data/var_lib_lokinet/
+test-data/
+# !data/webroot/
+# !data/nginx/
+
+# Container logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build cache
+.docker/
+build/
+dist/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Sensitive data
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.csr
+*.pem
+*.private
+*.secret
+
+# Lokinet specific
+*.signed
+nodedb/
+profiles.dat
+addrmap.dat
+
+# Nginx
+nginx.conf
+sites-enabled/
+sites-available/
+
+# System files
+/tmp/
+/var/tmp/
+/var/log/

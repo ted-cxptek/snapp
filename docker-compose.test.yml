@@ -1,0 +1,27 @@
+version: "3.3"
+services:
+  lokinet-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    restart: always
+    privileged: true
+    volumes:
+      - "./test-data/var_lib_lokinet:/var/lib/lokinet"
+    environment:
+      - DEBIAN_FRONTEND=noninteractive
+    dns:
+      - 127.3.2.1
+      - 8.8.8.8
+
+  without-lokinet:
+    build:
+      context: .
+      dockerfile: Dockerfile.without-lokinet
+    restart: always
+    privileged: true
+    environment:
+      - DEBIAN_FRONTEND=noninteractive
+    dns:
+      - 127.3.2.1
+      - 8.8.8.8

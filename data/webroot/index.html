@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lokinet SNApp</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .status {
+            background: rgba(0, 255, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #00ff00;
+        }
+        .info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        .highlight {
+            background: rgba(255, 255, 0, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Lokinet Test SNApp</h1>
+        
+        <div class="status">
+            <strong>✅ Status: Online</strong>
+            <p>Your SNApp is successfully running on Lokinet!</p>
+        </div>
+        
+        <div class="info">
+            <h3>🌐 What is this?</h3>
+            <p>This is a website hosted on the Lokinet network, accessible via a .loki address. Your traffic is routed through multiple nodes for privacy and anonymity.</p>
+        </div>
+        
+        <div class="info">
+            <h3>🔍 How to access:</h3>
+            <p>To get your .loki address, run this command in your terminal:</p>
+            <div class="highlight">
+                docker exec -it $(docker ps -q --filter "ancestor=snapp_lokinet") /get_loki_address.sh
+            </div>
+        </div>
+        
+        <div class="info">
+            <h3>🛡️ Privacy Features:</h3>
+            <ul>
+                <li>Anonymous hosting - no IP address exposure</li>
+                <li>Traffic routed through multiple nodes</li>
+                <li>No port forwarding required</li>
+                <li>Works behind firewalls and NAT</li>
+            </ul>
+        </div>
+        
+        <div class="info">
+            <h3>⚙️ Technical Details:</h3>
+            <p>This SNApp is running in Docker containers with:</p>
+            <ul>
+                <li>Lokinet service for network routing</li>
+                <li>Nginx + PHP-FPM for web serving</li>
+                <li>Automatic updates via Watchtower</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

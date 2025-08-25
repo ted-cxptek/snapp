@@ -1,0 +1,13 @@
+version: "3.3"
+services:
+  lokinet:
+    build: .
+    restart: always
+    privileged: true
+    tty: true
+    ports:
+      - "8080:80"
+    volumes:
+      - "./data/var_lib_lokinet:/var/lib/lokinet"
+      - "./data/nginx/:/etc/nginx/sites-enabled/"
+      - "./data/webroot/:/var/www/html/"
