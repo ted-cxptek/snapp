@@ -6,113 +6,126 @@
 
 Hướng dẫn này chỉ ra cách triển khai ứng dụng web sử dụng Docker containers với Lokinet để kết nối mạng và Nginx để phục vụ web.
 
-## Yêu cầu hệ thống
-
-- **Docker** và **Docker Compose**
-- Hiểu biết cơ bản về containerization
-- Cổng 8080 có sẵn trên máy chủ của bạn
-- Kết nối internet để thiết lập ban đầu
-
-## Cấu trúc dự án
-
-```
-snapp/
-├── Dockerfile                    # Main snapp container build
-├── docker-compose.yml           # Production deployment
-├── Dockerfile.test              # Test client container
-├── docker-compose.test.yml      # Testing environment
-├── data/                        # Production data directory
-│   ├── var_lib_lokinet/        # Lokinet configuration & data
-│   ├── nginx/                  # Nginx configuration files
-│   └── webroot/                # Web application files
-└── test-data/                  # Test environment data
-    └── var_lib_lokinet/        # Test Lokinet data
-```
-
-## Thành phần
-
-### **Snapp Container** (`docker-compose.yml`)
-- **Mục đích**: Lưu trữ dịch vụ web của bạn
-- **Dịch vụ**: Nginx + Lokinet (tích hợp trong một container)
-- **Cổng**: 8080:80 (host:container)
-
-### **Test Container** (`docker-compose.test.yml`)
-- **Mục đích**: Client để kiểm tra truy cập tên miền .loki
-- **Dịch vụ**: Lokinet (chỉ phân giải DNS)
+- Repository: https://github.com/ted-cxptek/snapp
 
 ## Chi tiết Dockerfile
 
-### **Dockerfile** - Snapp Container
+### **Dockerfile** - Snapp Container (`Dockerfile`)
+
 **Chức năng**: Cài đặt, khởi động Lokinet và chạy web server Nginx cơ bản
 
 **Quy trình hoạt động**:
-1. **Cài đặt**: Ubuntu + Lokinet + Nginx + công cụ cần thiết
-2. **Cấu hình Lokinet**: 
-   - Tạo private key và bootstrap
-   - Cấu hình virtual IP (10.67.0.1/16)
-   - Thiết lập keyfile paths
-3. **Khởi động dịch vụ**:
-   - Khởi động Nginx web server
-   - Chạy Lokinet network service
-4. **Kết quả**: Container hoạt động với cả web server và network layer
 
-### **Dockerfile.test** - Test Container
+1. **Cài đặt**: Ubuntu + Lokinet + Nginx + công cụ cần thiết
+2. **Cấu hình Lokinet**:
+    - Tạo private key và bootstrap
+    - Cấu hình virtual IP (10.67.0.1/16)
+    - Thiết lập keyfile paths
+3. **Khởi động**
+    - Khởi động Nginx web server
+    - Chạy Lokinet network service, Chờ 15 giây để Lokinet sẵn sàng
+    - Có thể check logs của container để biết Lokinet đã sẵn sàng
+        
+        `docker logs --tail 1000 -f container-id`
+        
+
+### **Dockerfile.test** - Test Container (`Dockerfile.test`)
+
 **Chức năng**: Cài đặt, khởi động Lokinet và thử gửi request đến Snapp qua tên miền .loki
 
 **Quy trình hoạt động**:
+
 1. **Cài đặt**: Ubuntu + Lokinet + công cụ DNS testing
-2. **Cấu hình DNS**: 
-   - Thiết lập nameserver 127.3.2.1 cho .loki domains
-   - Cấu hình resolvconf
-3. **Khởi động Lokinet**: 
-   - Chạy Lokinet trong background
-   - Chờ 15 giây để network sẵn sàng
-4. **Kết quả**: Container có thể phân giải và truy cập .loki domains
+2. **Cấu hình DNS**:
+    - Thiết lập nameserver 127.3.2.1 cho .loki domains
+    - Cấu hình resolvconf
+3. **Khởi động Lokinet**:
+    - Chạy Lokinet trong background
+    - Chờ 15 giây để network sẵn sàng
+    - Có thể check logs của container để biết Lokinet đã sẵn sàng
+        
+        `docker logs --tail 1000 -f container-id`
+        
 
 ---
 
-## Run Snapp, Client
+## Start Snapp và Client
 
 ```bash
 # Khởi động dịch vụ Snapp
 docker-compose -f docker-compose.yml up --build -d
 
-# Truy cập cục bộ
-curl http://localhost:8080
+# Truy cập cục bộ, test web server
+curl <http://localhost:8080>
 
 # Khởi động dịch vụ Client truy cap Snapp
 docker-compose -f docker-compose.test.yml up --build -d
 
 ```
 
-## Lấy tên miền .loki
+## Lấy SNapp loki domain
 
-Để lấy tên miền .loki của Snapp, bạn cần thực thi vào container và chạy script `get_loki_address.sh`:
+Để lấy tên miền .loki của Snapp, bạn cần thực thi vào Snapp container và chạy script `get_loki_address.sh`:
 
-### **Bước 1: Kiểm tra container đang chạy**
 ```bash
-docker ps
-```
-
-### **Bước 2: Thực thi vào Snapp container**
-```bash
+# Exec to Snapp container
 docker exec -it snapp-lokinet-1 /bin/bash
-```
-
-### **Bước 3: Chạy script lấy địa chỉ .loki**
-```bash
+# Run script to get loki address
 ./get_loki_address.sh
+
 ```
 
-### **Kết quả:**
-Script sẽ hiển thị tên miền .loki của bạn, ví dụ:
-```
-localhost.loki is an alias for 73qqjm7ju98g6obua8bprce1tjyyphnotknnijhpn8mypwumqs8o.loki.
+```bash
+# Result:
+Using domain server:
+Name: 127.3.2.1
+Address: 127.3.2.1#53
+Aliases:
+
+localhost.loki is an alias for t5hn48fdpwo3zjhu49z8q8qtrz3q977rki89t4s318cgpgjm519y.loki.
+
 ```
 
+`t5hn48fdpwo3zjhu49z8q8qtrz3q977rki89t4s318cgpgjm519y.loki` là tên miền Loki của Snapp
 
-### **Lưu ý quan trọng:**
-- **DNS 127.3.2.1**: Chỉ hoạt động khi Lokinet đang chạy
-- **Tên miền .loki**: Chỉ có thể truy cập từ mạng Lokinet
-- **Bảo mật**: Lokinet cung cấp kết nối ẩn danh và mã hóa
-- **Tốc độ**: Có thể chậm hơn internet thông thường do routing ẩn danh
+## Kiểm tra request tới SNapp
+
+Cần thực thi vào container của Client đã chạy Lokinet:
+
+```bash
+# Exec to Client container
+docker exec -it snapp-lokinet-test /bin/bash
+
+# Try curl to Snapp domain
+curl t5hn48fdpwo3zjhu49z8q8qtrz3q977rki89t4s318cgpgjm519y.loki
+
+```
+
+```bash
+# Output
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lokinet SNApp</title>
+ </head>
+ <body>...</body>
+</html>
+
+```
+
+Hoặc có thể curl tới `http://kcpyawm9se7trdbzncimdi5t7st4p5mh9i1mg7gkpuubi4k4ku1y.loki/` , là domain Oxen cung cấp để test
+
+## Kết luận
+
+- Có thể config Snap như là một web server, server của dịch vụ Chat
+- Các Client cần chạy Lokinet để có thể giao tiếp với Server(Snapp) đảm bảo việc privacy, cả 2 bên Client và Server đều ẩn danh và riêng tư
+
+## Tài liệu kham thảo
+
+| **Chủ đề** | **Nội dung** | **Link** |
+| --- | --- | --- |
+| Hosting Snapp | Guide hosting snap | https://docs.oxen.io/oxen-docs/products-built-on-oxen/lokinet/snapps/hosting-snapps |
+| Troubleshooting DNS resolve | Khắc phục lỗi DNS resolve | https://docs.oxen.io/oxen-docs/products-built-on-oxen/lokinet/guides/linux-troubleshooting |
+| Lokinet Domain | Một số Lokinet domain có sẵn | https://loki.network/2020/04/07/lokinet-gui-release/ |

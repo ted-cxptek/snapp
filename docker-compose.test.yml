@@ -13,15 +13,3 @@ services:
     dns:
       - 127.3.2.1
       - 8.8.8.8
-
-  without-lokinet:
-    build:
-      context: .
-      dockerfile: Dockerfile.without-lokinet
-    restart: always
-    privileged: true
-    environment:
-      - DEBIAN_FRONTEND=noninteractive
-    dns:
-      - 127.3.2.1
-      - 8.8.8.8

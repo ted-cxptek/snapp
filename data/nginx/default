@@ -7,7 +7,7 @@ server {
         # Add index.php to the list if you are using PHP
         index index.html index.htm index.nginx-debian.html;
 
-        server_name _ 4pzkr1fd76ns9zk118a83crus8y4szpxy6b8whkczmxcegni4nwy.loki;
+        server_name _ raziiuiofbxoor3budb4cw15y4uswymjw3t7d76na5en84cpw7gy.loki;
 
         location / {
                 # First attempt to serve request as file, then
