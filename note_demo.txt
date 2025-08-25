@@ -1,0 +1,22 @@
+- Run docker Snapp
+docker-compose -f docker-compose.yml up --build -d     
+
+- Run docker Client-test
+docker-compose -f docker-compose.test.yml up --build -d
+
+- Check log container is success?
+Snapp: OK
+Client: OK
+
+- Test web server is running? -> OK
+
+- Get Loki Snapp Domain
+docker exec -it snapp-lokinet-1 /get_loki_address.sh
+
+
+- Request to Snapp
+curl http://raziiuiofbxoor3budb4cw15y4uswymjw3t7d76na5en84cpw7gy.loki
+
+Get HTML page from Snapp is OK!
+- Try to the other snapp that Oxen provided in Docs, http://kcpyawm9se7trdbzncimdi5t7st4p5mh9i1mg7gkpuubi4k4ku1y.loki/ -> OK
+
