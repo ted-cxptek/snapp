@@ -6,6 +6,10 @@ RUN apt update && apt upgrade -y
 RUN echo "resolvconf resolvconf/linkify-resolvconf boolean false" | debconf-set-selections
 RUN apt install curl lsb-release resolvconf dnsutils iproute2 procps --yes
 
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+RUN apt-get install -y nodejs
+
 # Install Lokinet using official method
 RUN curl -so /etc/apt/trusted.gpg.d/oxen.gpg https://deb.oxen.io/pub.gpg
 RUN echo "deb https://deb.oxen.io $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/oxen.list
@@ -31,6 +35,9 @@ RUN chmod +x /get_loki_address.sh
 # Copy configuration
 RUN cp /var/lib/lokinet/lokinet.ini /
 
+# Create websocket-test directory (will be mounted as volume)
+RUN mkdir -p /app/websocket-test
+
 # Create startup script
 RUN echo "#!/bin/bash" > /start.sh
 RUN echo "set -e" >> /start.sh
@@ -47,6 +54,9 @@ RUN echo "sleep 15" >> /start.sh
 RUN echo "echo 'Updating DNS configuration...'" >> /start.sh
 RUN echo "resolvconf -u" >> /start.sh
 RUN echo "echo 'DNS configured. Container ready for .loki domain resolution.'" >> /start.sh
+RUN echo "echo 'Installing WebSocket test dependencies...'" >> /start.sh
+RUN echo "cd /app/websocket-test && npm install" >> /start.sh
+RUN echo "echo 'Dependencies installed. Ready for testing.'" >> /start.sh
 RUN echo "tail -f /dev/null" >> /start.sh
 RUN chmod +x /start.sh
 

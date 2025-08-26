@@ -1,0 +1,19 @@
+{
+  "name": "websocket-test",
+  "version": "1.0.0",
+  "description": "WebSocket test for e2ee-chat-server",
+  "main": "test.js",
+  "scripts": {
+    "test-loki": "node test-loki.js"
+  },
+  "dependencies": {
+    "ws": "^8.14.2",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": ["websocket", "test", "lokinet", "e2ee"],
+  "author": "Your Name",
+  "license": "MIT"
+}

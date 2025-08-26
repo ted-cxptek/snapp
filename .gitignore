@@ -13,7 +13,8 @@ docker-compose.*.yml
 
 # Docker volumes and data
 data/var_lib_lokinet/
-test-data/
+test-data/var_lib_lokinet
+test-data/websocket-test/node_modules
 # !data/webroot/
 # !data/nginx/
 

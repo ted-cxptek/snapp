@@ -8,6 +8,7 @@ services:
     privileged: true
     volumes:
       - "./test-data/var_lib_lokinet:/var/lib/lokinet"
+      - "./test-data/websocket-test:/app/websocket-test"
     environment:
       - DEBIAN_FRONTEND=noninteractive
     dns:

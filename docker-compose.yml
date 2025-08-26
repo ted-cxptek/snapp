@@ -7,6 +7,7 @@ services:
     tty: true
     ports:
       - "3000:3000"
+      - "8002:8002"
     volumes:
       - "./data/var_lib_lokinet:/var/lib/lokinet"
       - "./data/chat_server:/data"
