@@ -1,13 +1,14 @@
 version: "3.3"
 services:
-  lokinet:
+  e2ee-chat-server:
     build: .
     restart: always
     privileged: true
     tty: true
     ports:
-      - "8080:80"
+      - "3000:3000"
     volumes:
       - "./data/var_lib_lokinet:/var/lib/lokinet"
-      - "./data/nginx/:/etc/nginx/sites-enabled/"
-      - "./data/webroot/:/var/www/html/"
+      - "./data/chat_server:/data"
+    environment:
+      - PORT=3000
