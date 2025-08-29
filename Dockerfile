@@ -20,6 +20,11 @@ RUN /usr/bin/lokinet -g
 RUN lokinet-bootstrap
 RUN chown _lokinet:_loki /var/lib/lokinet -R
 
+# Configure DNS resolution for .loki domains
+RUN mkdir -p /etc/resolvconf/resolv.conf.d
+RUN echo "nameserver 127.3.2.1" > /etc/resolvconf/resolv.conf.d/head
+RUN echo "nameserver 8.8.8.8" >> /etc/resolvconf/resolv.conf.d/head
+
 # Create script to get loki address
 RUN echo "#!/bin/bash" > /get_loki_address.sh
 RUN echo "host -t cname localhost.loki 127.3.2.1" >> /get_loki_address.sh
@@ -49,6 +54,9 @@ RUN echo "echo 'Starting Lokinet daemon...'" >> /start.sh
 RUN echo "/usr/bin/lokinet &" >> /start.sh
 RUN echo "echo 'Waiting for Lokinet to be ready...'" >> /start.sh
 RUN echo "sleep 15" >> /start.sh
+RUN echo "echo 'Updating DNS configuration...'" >> /start.sh
+RUN echo "resolvconf -u" >> /start.sh
+RUN echo "echo 'DNS configured for .loki domains.'" >> /start.sh
 RUN echo "echo 'Initializing database using Makefile...'" >> /start.sh
 RUN echo "cd /" >> /start.sh
 RUN echo "make migrate_db_sqlite" >> /start.sh

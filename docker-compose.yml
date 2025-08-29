@@ -13,3 +13,6 @@ services:
       - "./data/chat_server:/data"
     environment:
       - PORT=3000
+    dns:
+      - 127.3.2.1
+      - 8.8.8.8

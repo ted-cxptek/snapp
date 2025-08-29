@@ -13,7 +13,7 @@ console.log(`💡 Example: node test-api.js mydomain.loki 3000`);
 const loginData = {
     "password": "123123123",
     "publicKey": "123123123",
-    "username": "tedcxp_2"
+    "username": "t12edcxp_4"
 };
 
 // Function to make HTTP request
@@ -29,10 +29,10 @@ function makeRequest(domain, port, path, method = 'POST', data = null) {
                 'User-Agent': 'Node.js API Test Client'
             }
         };
+        console.log("Start: ", Date.now());
 
         const req = http.request(options, (res) => {
             let responseData = '';
-            
             res.on('data', (chunk) => {
                 responseData += chunk;
             });
@@ -41,6 +41,7 @@ function makeRequest(domain, port, path, method = 'POST', data = null) {
                 console.log(`📡 Response Status: ${res.statusCode}`);
                 console.log(`📡 Response Headers:`, res.headers);
                 console.log(`📡 Response Body:`, responseData);
+                console.log("End: ", Date.now());
                 
                 try {
                     const jsonResponse = JSON.parse(responseData);
